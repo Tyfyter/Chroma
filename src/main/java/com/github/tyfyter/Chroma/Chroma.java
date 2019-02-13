@@ -1,6 +1,7 @@
 package com.github.tyfyter.Chroma;
 
 import com.github.tyfyter.Chroma.Effects.NoClipEffect;
+import com.github.tyfyter.Chroma.Effects.SandCatEffect;
 import com.github.tyfyter.Chroma.Entities.EntitySpiderBlack;
 import com.github.tyfyter.Chroma.Entities.EntitySpiderRed;
 import com.github.tyfyter.Chroma.Entities.EntitySpiderYellow;
@@ -16,6 +17,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
@@ -50,16 +52,18 @@ public class Chroma
     @Instance
     public static Chroma CInstance;
     
-    @SidedProxy(serverSide = "ServerProxy", clientSide = "ClientProxy")
+    //@SidedProxy(serverSide = "ServerProxy", clientSide = "ClientProxy")
     public static CommonProxy proxy;
     
     static ScriptEngineManager mgr = new ScriptEngineManager(null);
     static ScriptEngine engine = mgr.getEngineByName("nashorn");
     
     public static NoClipEffect noClip;
+	public static SandCatEffect SandCat;
     
     //declaration
     public static Item[] ItemStrings = new Item[16];
+	public static Item[][] ItemStringyArmors = new Item[16][4];
     
     public static CreativeTabs tabChroma = new CreativeTabsChroma("Chroma");
     public static int index = 0;
@@ -68,7 +72,7 @@ public class Chroma
 	@EventHandler
     public void init(FMLInitializationEvent event)
     {
-	    proxy.init();
+	    //proxy.init();
 		MinecraftForge.EVENT_BUS.register(new EventHandlerMain());
 		FMLCommonHandler.instance().bus().register(new EventHandlerMain());
     	RenderingRegistry.registerEntityRenderingHandler(EntitySpiderRed.class, new RenderRedSpider(Minecraft.getMinecraft().getRenderManager()));
@@ -98,15 +102,24 @@ public class Chroma
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-    proxy.preInit();
+    //proxy.preInit();
     for (int i = 0; i < ItemStrings.length; i++) {
         ItemStrings[i] = new ItemString(i).setUnlocalizedName(ItemString.colornames.get(i)+"_string").setMaxStackSize(64);//setTextureName(EpikMod.MODID + ":" + "itemTest");
         System.out.println("registering string as chroma:"+ItemStrings[i].getUnlocalizedName().replace("item.", ""));
         GameRegistry.registerItem(ItemStrings[i], ItemStrings[i].getUnlocalizedName().replace("item.", ""));
 		ModelLoader.setCustomModelResourceLocation(ItemStrings[i], 0, new ModelResourceLocation("chroma:string"));
 	}
+	for (int i = 0; i < ItemStrings.length; i++) {
+		for(int j = 0; j < 3; j++){
+			ItemStringyArmors[i][j] = new ItemStringyArmor(ItemArmor.ArmorMaterial.CHAIN, j, j, i).setUnlocalizedName(ItemString.colornames.get(i)+"_string_"+ItemStringyArmor.pieceNames[j]);//setTextureName(EpikMod.MODID + ":" + "itemTest");
+			System.out.println("registering stringy armor as chroma:"+ItemStringyArmors[i][j].getUnlocalizedName().replace("item.", ""));
+			GameRegistry.registerItem(ItemStringyArmors[i][j], ItemStringyArmors[i][j].getUnlocalizedName().replace("item.", ""));
+			ModelLoader.setCustomModelResourceLocation(ItemStringyArmors[i][j], 0, new ModelResourceLocation("chroma:string"));
+		}
+	}
     int rindex = 0;
     noClip = new NoClipEffect(new ResourceLocation("chroma","noClip"), false, 13884650);
+    SandCat = new SandCatEffect(new ResourceLocation("chroma","SandCat"), false, 16777164);
     INSTANCE.registerMessage(NoClipHandler.class, NoClipPackage.class, 0, Side.CLIENT);
     //since red spiders and string were the first ones I added
     EntityRegistry.registerModEntity(EntitySpiderRed.class, "RedSpider", ++rindex, CInstance, 80, 3, true/*, 10027008*/, 14155776, 16734262);

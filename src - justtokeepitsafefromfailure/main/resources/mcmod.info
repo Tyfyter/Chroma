@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "Chroma",
+    "name": "Chroma",
+    "version": "${version}",
+    "mcversion": "1.8.9",
+    "description": "",
+    "credits": "a lot of people in the ModDevCafe discord, but especially UpcraftLP and Bluexin ♥, u/Cultist_O (this mod is based on a post from r/s*****mcsuggestions), senpaisubaraki on the Minecraft fourums since transparency is overcomplicated, and The Forge Dev Team (since they made forge)",
+    "url": "https://sites.google.com/view/tyfyterpoorlymoddingterraria/home",
+    "updateUrl": "",
+    "authorList": ["Tyfyter"],
+    "logoFile": "",
+    "screenshots": [],
+    "parent":"",
+    "dependencies": ["mod_MinecraftForge"]
+  }
+]

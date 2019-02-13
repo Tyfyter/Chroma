@@ -5,7 +5,7 @@
     "version": "${version}",
     "mcversion": "1.8.9",
     "description": "",
-    "credits": "a lot of people in the ModDevCafe discord, but especially UpcraftLP and Bluexin ♥, u/Cultist_O (this mod is based on a post from r/s*****mcsuggestions), senpaisubaraki on the Minecraft fourums since transparency is overcomplicated, and The Forge Dev Team (since they made forge)",
+    "credits": "a lot of people in the ModDevCafe discord, but especially Cadiboo, UpcraftLP, and Bluexin ♥, u/Cultist_O (this mod is based on a post from r/s*****mcsuggestions), https://github.com/SpongePowered/Mixin/graphs/contributors, senpaisubaraki on the Minecraft fourums since transparency is overcomplicated, and The Forge Dev Team (since they made forge)",
     "url": "https://sites.google.com/view/tyfyterpoorlymoddingterraria/home",
     "updateUrl": "",
     "authorList": ["Tyfyter"],

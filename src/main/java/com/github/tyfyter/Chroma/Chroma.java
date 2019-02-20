@@ -1,27 +1,25 @@
 package com.github.tyfyter.Chroma;
 
-import com.github.tyfyter.Chroma.Effects.NoClipEffect;
-import com.github.tyfyter.Chroma.Effects.SandCatEffect;
-import com.github.tyfyter.Chroma.Entities.EntitySpiderBlack;
-import com.github.tyfyter.Chroma.Entities.EntitySpiderRed;
-import com.github.tyfyter.Chroma.Entities.EntitySpiderYellow;
-import com.github.tyfyter.Chroma.Entities.Render.RenderBlackSpider;
-import com.github.tyfyter.Chroma.Entities.Render.RenderRedSpider;
-import com.github.tyfyter.Chroma.Entities.Render.RenderYellowSpider;
-import com.github.tyfyter.Chroma.Networking.CommonProxy;
-import com.github.tyfyter.Chroma.Networking.NoClipHandler;
-import com.github.tyfyter.Chroma.Networking.NoClipPackage;
+import com.github.tyfyter.Chroma.Effects.*;
+import com.github.tyfyter.Chroma.Entities.*;
+import com.github.tyfyter.Chroma.Entities.Render.*;
+import com.github.tyfyter.Chroma.Networking.*;
 import com.google.common.collect.HashBiMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -60,15 +58,19 @@ public class Chroma
     
     public static NoClipEffect noClip;
 	public static SandCatEffect SandCat;
+	public static SmolCatEffect SmolCat;
+	public static HellCatEffect HellCat;
+	public static NoFallEffect noFall;
     
     //declaration
     public static Item[] ItemStrings = new Item[16];
 	public static Item[][] ItemStringyArmors = new Item[16][4];
+	public ItemPotion itemPotion;
     
     public static CreativeTabs tabChroma = new CreativeTabsChroma("Chroma");
     public static int index = 0;
-    
-
+	
+	
 	@EventHandler
     public void init(FMLInitializationEvent event)
     {
@@ -78,10 +80,19 @@ public class Chroma
     	RenderingRegistry.registerEntityRenderingHandler(EntitySpiderRed.class, new RenderRedSpider(Minecraft.getMinecraft().getRenderManager()));
     	RenderingRegistry.registerEntityRenderingHandler(EntitySpiderBlack.class, new RenderBlackSpider(Minecraft.getMinecraft().getRenderManager()));
     	RenderingRegistry.registerEntityRenderingHandler(EntitySpiderYellow.class, new RenderYellowSpider(Minecraft.getMinecraft().getRenderManager()));
+		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderBrown.class, new RenderBrownSpider(Minecraft.getMinecraft().getRenderManager()));
+		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderOrange.class, new RenderOrangeSpider(Minecraft.getMinecraft().getRenderManager()));
+		RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new RenderPlayer(Minecraft.getMinecraft().getRenderManager()));
         for (int i = 0; i < ItemStrings.length; i++) {
         	ItemStack it = new ItemStack(Blocks.wool);
         	it.setItemDamage(i);
         	GameRegistry.addRecipe(it,"XX","XX",'X',ItemStrings[i]);
+			it = new ItemStack(ItemStringyArmors[i][0]);
+			GameRegistry.addRecipe(it,"XXX","X X","   ",'X',ItemStrings[i]);
+			it = new ItemStack(ItemStringyArmors[i][1]);
+			GameRegistry.addRecipe(it,"X X","XXX","XXX",'X',ItemStrings[i]);
+			it = new ItemStack(ItemStringyArmors[i][2]);
+			GameRegistry.addRecipe(it,"XXX","X X","X X",'X',ItemStrings[i]);
     	}
 		// some example code
 		
@@ -114,17 +125,36 @@ public class Chroma
 			ItemStringyArmors[i][j] = new ItemStringyArmor(ItemArmor.ArmorMaterial.CHAIN, j, j, i).setUnlocalizedName(ItemString.colornames.get(i)+"_string_"+ItemStringyArmor.pieceNames[j]);//setTextureName(EpikMod.MODID + ":" + "itemTest");
 			System.out.println("registering stringy armor as chroma:"+ItemStringyArmors[i][j].getUnlocalizedName().replace("item.", ""));
 			GameRegistry.registerItem(ItemStringyArmors[i][j], ItemStringyArmors[i][j].getUnlocalizedName().replace("item.", ""));
-			ModelLoader.setCustomModelResourceLocation(ItemStringyArmors[i][j], 0, new ModelResourceLocation("chroma:string"));
+			ModelLoader.setCustomModelResourceLocation(ItemStringyArmors[i][j], 0, new ModelResourceLocation("chroma:string_"+ItemStringyArmor.pieceNames[j]));
 		}
 	}
+	
+	itemPotion = new ItemPotion().setUnlocalizedName("potion");//setTextureName(EpikMod.MODID + ":" + "itemTest");
+	System.out.println("registering potion as chroma:"+itemPotion.getUnlocalizedName().replace("item.", ""));
+	GameRegistry.registerItem(itemPotion, itemPotion.getUnlocalizedName().replace("item.", ""));
+	ModelLoader.setCustomModelResourceLocation(itemPotion, 0, new ModelResourceLocation("minecraft:potion"));
     int rindex = 0;
     noClip = new NoClipEffect(new ResourceLocation("chroma","noClip"), false, 13884650);
     SandCat = new SandCatEffect(new ResourceLocation("chroma","SandCat"), false, 16777164);
-    INSTANCE.registerMessage(NoClipHandler.class, NoClipPackage.class, 0, Side.CLIENT);
+	HellCat = new HellCatEffect(new ResourceLocation("chroma","HellCat"), false, 16718105);
+	noFall = new NoFallEffect(new ResourceLocation("chroma","noFall"), false, 13884650);
+	SmolCat = new SmolCatEffect(new ResourceLocation("chroma","SmolCat"), false, 13884650);
+	try{
+		ItemStack itemStackIn = new ItemStack(Item.getByNameOrId("potion"));
+		itemStackIn.setItemDamage(16);
+		ItemStack itemStackOut = new ItemStack(Item.getByNameOrId("potion"));
+		itemStackOut.setTagInfo("CustomPotionEffects", JsonToNBT.getTagFromJson("[{Id:"+SandCat.id+",Duration:1800}]"));
+		BrewingRecipeRegistry.addRecipe(itemStackIn, new ItemStack(ItemStrings[ItemString.colornames.inverse().get("yellow")]), itemStackOut);
+	}catch(NBTException e){}
+	INSTANCE.registerMessage(NoClipHandler.class, NoClipPackage.class, 0, Side.CLIENT);
+	INSTANCE.registerMessage(BBHandler.class, BBPackage.class, 0, Side.CLIENT);
     //since red spiders and string were the first ones I added
     EntityRegistry.registerModEntity(EntitySpiderRed.class, "RedSpider", ++rindex, CInstance, 80, 3, true/*, 10027008*/, 14155776, 16734262);
     EntityRegistry.registerModEntity(EntitySpiderBlack.class, "BlackSpider", ++rindex, CInstance, 120, 3, true, 1118481, 3355443);
     EntityRegistry.registerModEntity(EntitySpiderYellow.class, "YellowSpider", ++rindex, CInstance, 60, 3, true, 16777072, 16771328);
+    EntityRegistry.registerModEntity(EntitySpiderBrown.class, "BrownSpider", ++rindex, CInstance, 50, 3, true, 9127187, 16771328);
+	EntityRegistry.registerModEntity(EntitySpiderOrange.class, "OrangeSpider", ++rindex, CInstance, 40, 3, true, 16734262, 10027008);
+	EntityRegistry.registerModEntity(EntityOrangeWeb.class, "OrangeSpiderWeb", ++rindex, CInstance, 40, 3, true);
     }
     
     @EventHandler

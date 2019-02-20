@@ -11,7 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 public class ItemString extends Item {
-	public static final String[] colornamesarray = new String[]{"white","orange","magenta","skyblue","yellow","lime","pink","gray","lightgray","cyan","purble","blue","brown","green","red","black"};
+	public static final String[] colornamesarray = new String[]{"white","orange","magenta","skyblue","yellow","lime","pink","gray","lightgray","cyan","purple","blue","brown","green","red","black"};
 	public static final BiMap<Integer,String> colornames = (BiMap<Integer, String>) Chroma.ArrtoMap(colornamesarray);
 	static final int[] colorvalues = new int[]{16777215,16736000,16711935,3658495,16766720,11206400,16746700,4342338,10066329,42395,6160567,1645000,9127187,1999872,16718105,0};
 	

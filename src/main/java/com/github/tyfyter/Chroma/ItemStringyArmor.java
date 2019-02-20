@@ -1,9 +1,18 @@
 package com.github.tyfyter.Chroma;
 
+import com.github.tyfyter.Chroma.Networking.BBPackage;
+import com.github.tyfyter.Chroma.Networking.NoClipPackage;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 @SuppressWarnings("unused")
@@ -31,8 +40,28 @@ public class ItemStringyArmor extends ItemArmor {
 		}
 		try{
 			switch (color){
+			case 3:
+				if(!player.onGround&&player.isSneaking()&&!player.capabilities.isFlying)player.motionY+=0.075;
+				if(!player.onGround&&!player.isSneaking())player.onGround=true;
+				player.addPotionEffect(new PotionEffect(Chroma.noFall.id, 1));
+				break;
 			case 4:
 				player.addPotionEffect(new PotionEffect(Chroma.SandCat.id, 1));
+				break;
+			case 8:
+				if((player.motionY>0.1&&!player.onGround)||player.isSneaking())player.addPotionEffect(new PotionEffect(Chroma.noClip.id, 2));
+				break;
+			case 12:
+				if(player.getActivePotionEffect(Chroma.SmolCat)==null){
+					player.addPotionEffect(new PotionEffect(Chroma.SmolCat.id, 2, 1));
+				}else{
+					player.getActivePotionEffect(Chroma.SmolCat).duration = 2;
+				}
+				break;
+			case 14:
+				int j = 0;
+				if(player.getActivePotionEffect(Chroma.HellCat)!=null)j = player.getActivePotionEffect(Chroma.HellCat).getAmplifier();
+				player.addPotionEffect(new PotionEffect(Chroma.HellCat.id, 5, j));
 				break;
 			default:
 				break;
